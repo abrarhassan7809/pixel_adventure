@@ -15,14 +15,15 @@ class PixelAdventure extends FlameGame
   late CameraComponent cam;
   Player player = Player();
   late JoystickComponent joystick;
-  
+  late JumpButton jumpButton;
+
   // ##### change into true for show controls #####
   bool showControls = true;
-
-  bool playSounds = false;
+  bool playSounds = true;
   double soundVolume = 1.0;
-  List<String> levelName = ['Level-01', 'Level-01'];
+  List<String> levelName = ['Level-01', 'Level-02'];
   int currentLevelIndex = 0;
+  Level? currentLevel;
 
   @override
   FutureOr<void> onLoad() async {
@@ -44,13 +45,11 @@ class PixelAdventure extends FlameGame
     if (showControls) {
       updateJoystick();
     }
-    
+
     super.update(dt);
   }
 
   void addJoystick() {
-    priority = 10;
-
     joystick = JoystickComponent(
       knob: SpriteComponent(
         sprite: Sprite(
@@ -63,7 +62,8 @@ class PixelAdventure extends FlameGame
         ),
       ),
 
-      margin: EdgeInsets.only(left: 32, bottom: 32)
+      margin: EdgeInsets.only(left: 10, bottom: 32),
+      priority: 100,
     );
 
     add(joystick);
@@ -88,25 +88,40 @@ class PixelAdventure extends FlameGame
   }
 
   void loadNextLevel() {
+    // Remove current level and camera
+    if (currentLevel != null) {
+      currentLevel!.removeFromParent();
+    }
+    if (cam.parent != null) {
+      cam.removeFromParent();
+    }
+
+    // Reset player state for new level
+    player.resetForNewLevel();
+
+    // Load next level
     if (currentLevelIndex < levelName.length - 1) {
       currentLevelIndex++;
       _loadLevel();
     } else {
+      // If last level, go back to first
       currentLevelIndex = 0;
       _loadLevel();
     }
   }
 
   void _loadLevel() {
-    Future.delayed(const Duration(seconds: 1,), () {
-      Level world = Level(
-        player: player,
-        levelName: levelName[currentLevelIndex],
-      );
+    Level world = Level(
+      player: player,
+      levelName: levelName[currentLevelIndex],
+    );
 
-      cam = CameraComponent.withFixedResolution(world: world, width: 640, height: 360);
-      cam.viewfinder.anchor = Anchor.topLeft;
-      addAll([cam, world]);
-    });
+    currentLevel = world;
+
+    cam = CameraComponent.withFixedResolution(world: world, width: 640, height: 360);
+    cam.viewfinder.anchor = Anchor.topLeft;
+
+    // Add camera and world to game
+    addAll([cam, world]);
   }
 }

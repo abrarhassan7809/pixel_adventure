@@ -32,6 +32,13 @@ class Level extends World
     return super.onLoad();
   }
 
+  @override
+  void onRemove() {
+    // Clean up when level is removed
+    collisionBlocks.clear();
+    super.onRemove();
+  }
+
   void _scrollingBackground() {
     final backgroundLayer = level.tileMap.getLayer('Background');
 

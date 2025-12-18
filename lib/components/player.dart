@@ -274,9 +274,28 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
     Future.delayed(canMoveDuration, () => gotHit = false);
   }
 
+  void resetForNewLevel() {
+    // Reset player state for new level
+    velocity = Vector2.zero();
+    horizontalMovement = 0;
+    gotHit = false;
+    reachedCheckpoint = false;
+    isOnGround = false;
+    hasJumped = false;
+    current = PlayerState.idle;
+    collisionBlocks = []; // Clear old collision blocks
+
+    // Reset animation ticker
+    if (animationTicker != null) {
+      animationTicker!.reset();
+    }
+  }
+
   void _reachedCheckpoint() async {
     reachedCheckpoint = true;
     if (game.playSounds) FlameAudio.play('disappear.wav', volume: game.soundVolume);
+
+    // Adjust position for disappearing animation
     if (scale.x > 0) {
       position = position - Vector2.all(32);
     } else if (scale.x < 0) {
@@ -289,9 +308,9 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
     animationTicker?.reset();
 
     reachedCheckpoint = false;
-    position = Vector2.all(-640);
 
-    const waitToChangeDuration = Duration(seconds: 3);
+    // Load next level after short delay
+    const waitToChangeDuration = Duration(microseconds: 500);
     Future.delayed(waitToChangeDuration, () => game.loadNextLevel());
   }
 

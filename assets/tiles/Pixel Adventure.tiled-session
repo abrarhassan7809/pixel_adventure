@@ -16,18 +16,19 @@
             "scale": 1,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 320,
-                "y": 183.5
+                "x": 318,
+                "y": 242.5
             }
         },
         "Level-02.tmx": {
             "expandedObjectLayers": [
-                2
+                2,
+                3
             ],
             "scale": 1.001953125,
-            "selectedLayer": 1,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 319.87524366471735,
+                "x": 319.3762183235867,
                 "y": 184.14035087719296
             }
         },
